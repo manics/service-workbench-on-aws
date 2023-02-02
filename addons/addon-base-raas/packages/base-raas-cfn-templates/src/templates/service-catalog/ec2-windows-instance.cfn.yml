@@ -73,6 +73,13 @@ Parameters:
   EgressStoreIamPolicyDocument:
     Type: String
     Description: The IAM policy for launched workstation to access egress store
+  EnableHibernation:
+    Type: String
+    Description: Whether hibernation is enabled on this resource
+    Default: "false"
+    AllowedValues:
+      - "true"
+      - "false"
 
 Conditions:
   IamPolicyEmpty: !Equals [!Ref IamPolicyDocument, '{}']
@@ -262,6 +269,8 @@ Resources:
             KmsKeyId: !Ref EncryptionKeyArn
             DeleteOnTermination: true
       PropagateTagsToVolumeOnCreation: true
+      HibernationOptions:
+        Configured: !Ref EnableHibernation
       NetworkInterfaces:
         - AssociatePublicIpAddress: !If [ AppStreamEnabled, 'false', 'true' ]
           DeviceIndex: '0'
