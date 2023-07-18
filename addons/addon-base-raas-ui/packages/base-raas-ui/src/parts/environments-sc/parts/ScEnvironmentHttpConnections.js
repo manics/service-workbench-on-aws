@@ -222,9 +222,9 @@ class ScEnvironmentHttpConnections extends React.Component {
               <Table.Row key={`${item.id}_destination`} className="fadeIn animated">
                 <Table.Cell colSpan="3" className="p3">
                   Click here to copy the destination URL:
-                  <CopyToClipboard text={destinationUrl.replace('.sagemaker.aws','.sagemaker.aws\/lab')} />
+                  <CopyToClipboard text={destinationUrl.replace('.sagemaker.aws', '.sagemaker.aws/lab')} />
                   <span data-testid="destination-url" style={destinationUrlStyle}>
-                    {destinationUrl.replace('.sagemaker.aws','.sagemaker.aws\/lab')}
+                    {destinationUrl.replace('.sagemaker.aws', '.sagemaker.aws/lab')}
                   </span>
                   <Button
                     floated="right"

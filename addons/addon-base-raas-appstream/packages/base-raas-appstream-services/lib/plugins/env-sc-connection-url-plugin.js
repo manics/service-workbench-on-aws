@@ -27,7 +27,7 @@ async function createConnectionUrl({ envId, connection }, { requestContext, cont
   const isRdp = connection.scheme === 'rdp' || connection.scheme === 'customrdp';
   const appStreamScService = await container.find('appStreamScService');
   const environmentScConnectionService = await container.find('environmentScConnectionService');
-  const environmentScService = await container.find("environmentScService");
+  const environmentScService = await container.find('environmentScService');
   const settings = await container.find('settings');
   const isAppStreamEnabled = settings.getBoolean(settingKeys.isAppStreamEnabled);
 
@@ -61,14 +61,12 @@ async function createConnectionUrl({ envId, connection }, { requestContext, cont
     const ec2 = await environmentScService.getClientSdkWithEnvMgmtRole(
       requestContext,
       { id: envId },
-      { clientName: "EC2", options: { apiVersion: "2016-11-15" } }
+      { clientName: 'EC2', options: { apiVersion: '2016-11-15' } },
     );
-    const data = await ec2
-      .describeInstances({ InstanceIds: [connection.instanceId] })
-      .promise();
-    const instanceInfo = _.get(data, "Reservations[0].Instances[0]");
-    const networkInterfaces = _.get(instanceInfo, "NetworkInterfaces") || [];
-    const privateIp = _.get(networkInterfaces[0], "PrivateIpAddress");
+    const data = await ec2.describeInstances({ InstanceIds: [connection.instanceId] }).promise();
+    const instanceInfo = _.get(data, 'Reservations[0].Instances[0]');
+    const networkInterfaces = _.get(instanceInfo, 'NetworkInterfaces') || [];
+    const privateIp = _.get(networkInterfaces[0], 'PrivateIpAddress');
     appStreamUrl = await appStreamScService.getStreamingUrl(requestContext, {
       environmentId: envId,
       applicationId: 'terminal',

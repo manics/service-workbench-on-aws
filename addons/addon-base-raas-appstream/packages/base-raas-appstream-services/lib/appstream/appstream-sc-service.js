@@ -12,29 +12,28 @@
  * express or implied. See the License for the specific language governing
  * permissions and limitations under the License.
  */
-const crypto = require("crypto");
-const _ = require("lodash");
-const Service = require("@amzn/base-services-container/lib/service");
-
+const crypto = require('crypto');
+const _ = require('lodash');
+const Service = require('@amzn/base-services-container/lib/service');
 
 const ENABLE_PASSWORD_SHARE = false;
 
 const settingKeys = {
-  enableAmiSharing: "enableAmiSharing",
-  devopsRoleArn: "devopsRoleArn",
-  devopsRoleExternalId: "devopsRoleExternalId",
+  enableAmiSharing: 'enableAmiSharing',
+  devopsRoleArn: 'devopsRoleArn',
+  devopsRoleExternalId: 'devopsRoleExternalId',
 };
 
 class AppStreamScService extends Service {
   constructor() {
     super();
     this.dependency([
-      "auditWriterService",
-      "aws",
-      "awsAccountsService",
-      "environmentScKeypairService",
-      "environmentScService",
-      "indexesService",
+      'auditWriterService',
+      'aws',
+      'awsAccountsService',
+      'environmentScKeypairService',
+      'environmentScService',
+      'indexesService',
     ]);
   }
 
@@ -42,11 +41,7 @@ class AppStreamScService extends Service {
     await super.init();
   }
 
-  async shareAppStreamImageWithAccount(
-    requestContext,
-    accountId,
-    appStreamImageName
-  ) {
+  async shareAppStreamImageWithAccount(requestContext, accountId, appStreamImageName) {
     const appStream = await this.getAppStream();
     const result = await appStream
       .updateImagePermissions({
@@ -61,7 +56,7 @@ class AppStreamScService extends Service {
 
     // Write audit event
     await this.audit(requestContext, {
-      action: "share-appstream-image-with-account",
+      action: 'share-appstream-image-with-account',
       body: { accountId },
     });
 
@@ -69,12 +64,11 @@ class AppStreamScService extends Service {
   }
 
   async getStackAndFleet(requestContext, { environmentId, indexId }) {
-    const [environmentScService, awsAccountsService, indexesService] =
-      await this.service([
-        "environmentScService",
-        "awsAccountsService",
-        "indexesService",
-      ]);
+    const [environmentScService, awsAccountsService, indexesService] = await this.service([
+      'environmentScService',
+      'awsAccountsService',
+      'indexesService',
+    ]);
 
     // Find stack
     const { awsAccountId } = await indexesService.mustFind(requestContext, {
@@ -89,26 +83,21 @@ class AppStreamScService extends Service {
     });
 
     if (!stackName) {
-      throw this.boom.badRequest(
-        `No AppStream stack is associated with the account ${accountId}`,
-        true
-      );
+      throw this.boom.badRequest(`No AppStream stack is associated with the account ${accountId}`, true);
     }
 
     // Verify fleet is associated to appstream stack
     const appStream = await environmentScService.getClientSdkWithEnvMgmtRole(
       requestContext,
       { id: environmentId },
-      { clientName: "AppStream", options: { signatureVersion: "v4" } }
+      { clientName: 'AppStream', options: { signatureVersion: 'v4' } },
     );
-    const { Names: fleetNames } = await appStream
-      .listAssociatedFleets({ StackName: stackName })
-      .promise();
+    const { Names: fleetNames } = await appStream.listAssociatedFleets({ StackName: stackName }).promise();
 
     if (!_.includes(fleetNames, fleetName)) {
       throw this.boom.badRequest(
         `AppStream Fleet ${fleetName} is not associated with the AppStream stack ${stackName}`,
-        true
+        true,
       );
     }
 
@@ -124,33 +113,30 @@ class AppStreamScService extends Service {
   generateUserId(requestContext, environment) {
     // UserId must match [\w+=,.@-]* with max length 32
     // Don't let the username be too long (otherwise the user won't be able to open multiple sessions)
-    const uid = _.get(requestContext, "principalIdentifier.uid");
+    const uid = _.get(requestContext, 'principalIdentifier.uid');
     // Append a unique session suffix to the user id, this user id is used for creating unique AppStream session
     // appending suffix to make sure a unique session is created per environment per user
     const sessionSuffix = this.generateSessionSuffix(environment);
-    return `${uid}-${sessionSuffix}`.replace(/[^\w+=,.@-]+/g, "").slice(0, 32);
+    return `${uid}-${sessionSuffix}`.replace(/[^\w+=,.@-]+/g, '').slice(0, 32);
   }
 
   async getStreamingUrl(requestContext, { environmentId, applicationId, sessionContext }) {
-    const environmentScService = await this.service("environmentScService");
+    const environmentScService = await this.service('environmentScService');
 
     const appStream = await environmentScService.getClientSdkWithEnvMgmtRole(
       requestContext,
       { id: environmentId },
-      { clientName: "AppStream", options: { signatureVersion: "v4" } }
+      { clientName: 'AppStream', options: { signatureVersion: 'v4' } },
     );
 
     const environment = await environmentScService.mustFind(requestContext, {
       id: environmentId,
     });
 
-    const { stackName, fleetName } = await this.getStackAndFleet(
-      requestContext,
-      {
-        environmentId,
-        indexId: environment.indexId,
-      }
-    );
+    const { stackName, fleetName } = await this.getStackAndFleet(requestContext, {
+      environmentId,
+      indexId: environment.indexId,
+    });
 
     let result = {};
 
@@ -165,15 +151,12 @@ class AppStreamScService extends Service {
         })
         .promise();
     } catch (err) {
-      throw this.boom.badRequest(
-        "There was an error generating AppStream URL",
-        true
-      );
+      throw this.boom.badRequest('There was an error generating AppStream URL', true);
     }
 
     // Write audit event
     await this.audit(requestContext, {
-      action: "appstream-firefox-app-url-requested",
+      action: 'appstream-firefox-app-url-requested',
       body: { environmentId },
     });
 
@@ -181,46 +164,38 @@ class AppStreamScService extends Service {
   }
 
   async urlForRemoteDesktop(requestContext, { environmentId, instanceId }) {
-    const [environmentScService, environmentScKeypairService] =
-      await this.service([
-        "environmentScService",
-        "environmentScKeypairService",
-      ]);
+    const [environmentScService, environmentScKeypairService] = await this.service([
+      'environmentScService',
+      'environmentScKeypairService',
+    ]);
     const environment = await environmentScService.mustFind(requestContext, {
       id: environmentId,
     });
 
-    const connectionScheme = environment.outputs.filter((output) =>
-      output.OutputValue === "customrdp" || output.OutputValue === "rdp"
-        ? output.OutputValue
-        : undefined
+    const connectionScheme = environment.outputs.filter(output =>
+      output.OutputValue === 'customrdp' || output.OutputValue === 'rdp' ? output.OutputValue : undefined,
     );
     // Get stack and fleet
-    const { stackName, fleetName } = await this.getStackAndFleet(
-      requestContext,
-      {
-        environmentId,
-        indexId: environment.indexId,
-      }
-    );
+    const { stackName, fleetName } = await this.getStackAndFleet(requestContext, {
+      environmentId,
+      indexId: environment.indexId,
+    });
 
     // Generate AppStream URL
     const appStream = await environmentScService.getClientSdkWithEnvMgmtRole(
       requestContext,
       { id: environmentId },
-      { clientName: "AppStream", options: { signatureVersion: "v4" } }
+      { clientName: 'AppStream', options: { signatureVersion: 'v4' } },
     );
     const ec2 = await environmentScService.getClientSdkWithEnvMgmtRole(
       requestContext,
       { id: environmentId },
-      { clientName: "EC2", options: { apiVersion: "2016-11-15" } }
+      { clientName: 'EC2', options: { apiVersion: '2016-11-15' } },
     );
-    const data = await ec2
-      .describeInstances({ InstanceIds: [instanceId] })
-      .promise();
-    const instanceInfo = _.get(data, "Reservations[0].Instances[0]");
-    const networkInterfaces = _.get(instanceInfo, "NetworkInterfaces") || [];
-    const privateIp = _.get(networkInterfaces[0], "PrivateIpAddress");
+    const data = await ec2.describeInstances({ InstanceIds: [instanceId] }).promise();
+    const instanceInfo = _.get(data, 'Reservations[0].Instances[0]');
+    const networkInterfaces = _.get(instanceInfo, 'NetworkInterfaces') || [];
+    const privateIp = _.get(networkInterfaces[0], 'PrivateIpAddress');
 
     const userId = this.generateUserId(requestContext, environment);
     this.log.info({
@@ -229,39 +204,29 @@ class AppStreamScService extends Service {
     });
 
     let sessionContext;
-    if (connectionScheme && connectionScheme[0].OutputValue === "rdp") {
-      sessionContext = privateIp + ",Administrator,rdp";
+    if (connectionScheme && connectionScheme[0].OutputValue === 'rdp') {
+      sessionContext = `${privateIp},Administrator,rdp`;
       if (ENABLE_PASSWORD_SHARE) {
-        const { PasswordData: passwordData } = await ec2
-          .getPasswordData({ InstanceId: instanceId })
-          .promise();
-        const { privateKey } = await environmentScKeypairService.mustFind(
-          requestContext,
-          environmentId
-        );
+        const { PasswordData: passwordData } = await ec2.getPasswordData({ InstanceId: instanceId }).promise();
+        const { privateKey } = await environmentScKeypairService.mustFind(requestContext, environmentId);
 
         const password = crypto
           .privateDecrypt(
             { key: privateKey, padding: crypto.constants.RSA_PKCS1_PADDING },
-            Buffer.from(passwordData, "base64")
+            Buffer.from(passwordData, 'base64'),
           )
-          .toString("utf8");
+          .toString('utf8');
 
         // Write audit event
         await this.audit(requestContext, {
-          action: "env-windows-password-requested",
+          action: 'env-windows-password-requested',
           body: { id: environmentId, instanceId },
         });
-        sessionContext = sessionContext + "," + password;
+        sessionContext = `${sessionContext},${password}`;
       }
-    } else if (
-      connectionScheme &&
-      connectionScheme[0].OutputValue === "customrdp"
-    ) {
-      sessionContext = privateIp + ",ec2-user,customrdp";
-      sessionContext = ENABLE_PASSWORD_SHARE
-        ? sessionContext + "," + instanceId
-        : sessionContext;
+    } else if (connectionScheme && connectionScheme[0].OutputValue === 'customrdp') {
+      sessionContext = `${privateIp},ec2-user,customrdp`;
+      sessionContext = ENABLE_PASSWORD_SHARE ? `${sessionContext},${instanceId}` : sessionContext;
     } else {
       sessionContext = privateIp;
     }
@@ -272,20 +237,17 @@ class AppStreamScService extends Service {
           FleetName: fleetName,
           StackName: stackName,
           UserId: userId,
-          ApplicationId: "remmina-client",
+          ApplicationId: 'remmina-client',
           SessionContext: sessionContext,
         })
         .promise();
     } catch (err) {
-      throw this.boom.badRequest(
-        "There was an error generating AppStream URL",
-        true
-      );
+      throw this.boom.badRequest('There was an error generating AppStream URL', true);
     }
 
     // Write audit event
     await this.audit(requestContext, {
-      action: "appstream-remote-desktop-app-url-requested",
+      action: 'appstream-remote-desktop-app-url-requested',
       body: { environmentId },
     });
 
@@ -293,7 +255,7 @@ class AppStreamScService extends Service {
   }
 
   async audit(requestContext, auditEvent) {
-    const auditWriterService = await this.service("auditWriterService");
+    const auditWriterService = await this.service('auditWriterService');
     // Calling "writeAndForget" instead of "write" to allow main call to continue without waiting for audit logging
     // and not fail main call if audit writing fails for some reason
     // If the main call also needs to fail in case writing to any audit destination fails then switch to "write" method as follows
@@ -302,7 +264,7 @@ class AppStreamScService extends Service {
   }
 
   async getAWS() {
-    const aws = await this.service("aws");
+    const aws = await this.service('aws');
     return aws;
   }
 
@@ -312,14 +274,12 @@ class AppStreamScService extends Service {
     let appstreamClient;
     // Get Devops account client if AMI sharing enabled.
     if (isAmiSharingEnabled) {
-      this.log.info(
-        `AMI Sharing enabled. Reading SDK using DevOps account role`
-      );
+      this.log.info(`AMI Sharing enabled. Reading SDK using DevOps account role`);
       const { roleArn, externalId } = this.getDevopsAccountDetails();
       appstreamClient = await aws.getClientSdkForRole({
         roleArn,
-        clientName: "AppStream",
-        options: { apiVersion: "2016-12-01" },
+        clientName: 'AppStream',
+        options: { apiVersion: '2016-12-01' },
         externalId,
       });
     } else {

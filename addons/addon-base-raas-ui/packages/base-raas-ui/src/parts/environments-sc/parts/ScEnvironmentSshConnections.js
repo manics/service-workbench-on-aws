@@ -108,9 +108,7 @@ class ScEnvironmentSshConnections extends React.Component {
               <List.Item>Paste your SSH key&apos;s contents into the terminal window launched in AppStream</List.Item>
             </List>
           </List.Item>
-          <List.Item>
-            You should be automatically logged into an SSH session.
-          </List.Item>
+          <List.Item>You should be automatically logged into an SSH session.</List.Item>
           <List.Item>
             If you get a Permissions Denied error, click &quot;Use this SSH key&quot; and try launcing terminal
           </List.Item>
