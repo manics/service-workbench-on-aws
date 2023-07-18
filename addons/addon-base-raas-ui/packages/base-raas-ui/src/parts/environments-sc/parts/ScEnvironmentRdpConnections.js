@@ -14,10 +14,10 @@ class ScEnvironmentRdpConnections extends React.Component {
     return this.props.scEnvironment;
   }
 
-  // Returns only the connections that scheme = 'rdp'
+  // Returns only the connections that has rdp or customrdp scheme
   // [ {id, name: <string>(optional), instanceId: <string>, scheme: 'rdp'}, ... ]
   get connections() {
-    const connections = this.environment.getConnections(item => item.scheme === 'rdp');
+    const connections = this.environment.getConnections(item => item.scheme === 'rdp' || item.scheme === 'customrdp');
 
     return connections;
   }
@@ -51,9 +51,9 @@ class ScEnvironmentRdpConnections extends React.Component {
           <b>Connection instructions for your AppStream workspace:</b>
           <List bulleted>
             <List.Item>Click the &quot;Get Password&quot; button to retrieve user credentials for RDP</List.Item>
-            <List.Item>Copy credential information and Hit &quot;Connect&quot;</List.Item>
+            <List.Item>Hit &quot;Connect&quot;</List.Item>
             <List.Item>
-              A new AppStream session window will open with RDP login page. Paste the copied credentials
+              A new AppStream session window will open with RDP login page. If required copy and paste the credentials
             </List.Item>
           </List>
         </Segment>

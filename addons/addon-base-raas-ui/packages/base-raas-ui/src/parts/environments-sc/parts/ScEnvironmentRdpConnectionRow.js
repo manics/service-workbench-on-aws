@@ -1,16 +1,16 @@
-import _ from 'lodash';
-import React from 'react';
-import { decorate, computed, action, runInAction, observable } from 'mobx';
-import { observer, inject } from 'mobx-react';
-import { withRouter } from 'react-router-dom';
-import { Button, Table, List, Label } from 'semantic-ui-react';
+import _ from "lodash";
+import React from "react";
+import { decorate, computed, action, runInAction, observable } from "mobx";
+import { observer, inject } from "mobx-react";
+import { withRouter } from "react-router-dom";
+import { Button, Table, List, Label } from "semantic-ui-react";
 
-import { displayError } from '@amzn/base-ui/dist/helpers/notification';
+import { displayError } from "@amzn/base-ui/dist/helpers/notification";
 
-import CopyToClipboard from '../../helpers/CopyToClipboard';
+import CopyToClipboard from "../../helpers/CopyToClipboard";
 
 const openWindow = (url, windowFeatures) => {
-  return window.open(url, '_blank', windowFeatures);
+  return window.open(url, "_blank", windowFeatures);
 };
 
 // expected props
@@ -35,7 +35,7 @@ class ScEnvironmentRdpConnectionRow extends React.Component {
   }
 
   get isAppStreamEnabled() {
-    return process.env.REACT_APP_IS_APP_STREAM_ENABLED === 'true';
+    return process.env.REACT_APP_IS_APP_STREAM_ENABLED === "true";
   }
 
   get environment() {
@@ -53,7 +53,9 @@ class ScEnvironmentRdpConnectionRow extends React.Component {
   // Returns only the connections that scheme = 'rdp'
   // [ {id, name: <string>(optional), instanceId: <string>, scheme: 'rdp'}, ... ]
   get connections() {
-    const connections = this.environment.getConnections(item => item.scheme === 'rdp');
+    const connections = this.environment.getConnections(
+      (item) => item.scheme === "rdp"
+    );
 
     return connections;
   }
@@ -62,7 +64,7 @@ class ScEnvironmentRdpConnectionRow extends React.Component {
     const id = this.connectionId;
     const connections = this.connections;
 
-    return _.find(connections, ['id', id]) || {};
+    return _.find(connections, ["id", id]) || {};
   }
 
   get connectionId() {
@@ -70,19 +72,31 @@ class ScEnvironmentRdpConnectionRow extends React.Component {
   }
 
   get networkInterfaces() {
-    const entries = _.get(this.windowsRdpInfo, 'networkInterfaces');
+    const entries = _.get(this.windowsRdpInfo, "networkInterfaces");
     if (_.isEmpty(entries)) return [];
 
     const result = [];
-    _.forEach(entries, item => {
-      if (item.publicDnsName) result.push({ value: item.publicDnsName, type: 'dns', scope: 'public', info: 'Public' });
-      if (item.privateIp) result.push({ value: item.privateIp, type: 'ip', scope: 'private', info: 'Private' });
+    _.forEach(entries, (item) => {
+      if (item.publicDnsName)
+        result.push({
+          value: item.publicDnsName,
+          type: "dns",
+          scope: "public",
+          info: "Public",
+        });
+      if (item.privateIp)
+        result.push({
+          value: item.privateIp,
+          type: "ip",
+          scope: "private",
+          info: "Private",
+        });
     });
 
     return result;
   }
 
-  handleConnect = id =>
+  handleConnect = (id) =>
     action(async () => {
       try {
         runInAction(() => {
@@ -92,10 +106,10 @@ class ScEnvironmentRdpConnectionRow extends React.Component {
         const urlObj = await store.createConnectionUrl(id);
         const appStreamUrl = urlObj.url;
         if (appStreamUrl) {
-          const newTab = openWindow('about:blank');
+          const newTab = openWindow("about:blank");
           newTab.location = appStreamUrl;
         } else {
-          throw Error('AppStream URL was not returned by the API');
+          throw Error("AppStream URL was not returned by the API");
         }
         runInAction(() => {
           this.processingGetConnection = false;
@@ -105,7 +119,7 @@ class ScEnvironmentRdpConnectionRow extends React.Component {
         displayError(error);
       } finally {
         runInAction(() => {
-          this.processingId = '';
+          this.processingId = "";
         });
       }
     });
@@ -157,7 +171,7 @@ class ScEnvironmentRdpConnectionRow extends React.Component {
             Get Password
           </Button>
 
-          <div className="mt1">{item.name || 'Connect'}</div>
+          <div className="mt1">{item.name || "Connect"}</div>
         </Table.Cell>
       </Table.Row>,
     ];
@@ -173,7 +187,8 @@ class ScEnvironmentRdpConnectionRow extends React.Component {
     const item = this.connection;
     const windowsRdpInfo = this.windowsRdpInfo;
     const interfaces = this.networkInterfaces;
-    const username = 'Administrator';
+    const network = interfaces[0];
+    const username = "Administrator";
     const password = windowsRdpInfo.password;
     const showPassword = this.showPassword;
     const connectionId = this.connectionId;
@@ -184,16 +199,18 @@ class ScEnvironmentRdpConnectionRow extends React.Component {
         <Table.Row key={`${item.id}__2`}>
           <Table.Cell className="p3">
             <b>
-              Your Windows workspace can be accessed via an RDP client by using the DNS host name and credentials
-              defined below.
+              Your workspace can be accessed via an RDP client by using
+              the credentials defined below.
             </b>
             <List bulleted>
               {!this.isAppStreamEnabled && (
                 <List.Item>
-                  The IP Address or DNS of the instance.{' '}
-                  {moreThanOne ? 'Ask your administrator if you are not sure which one to use:' : ''}
+                  The IP Address or DNS of the instance.{" "}
+                  {moreThanOne
+                    ? "Ask your administrator if you are not sure which one to use:"
+                    : ""}
                   <List>
-                    {_.map(interfaces, network => (
+                    {_.map(interfaces, (network) => (
                       <List.Item key={network.value} className="flex">
                         {this.renderHostLabel(network)}
                         <CopyToClipboard text={network.value} />
@@ -202,7 +219,15 @@ class ScEnvironmentRdpConnectionRow extends React.Component {
                   </List>
                 </List.Item>
               )}
-
+              <List.Item>
+                The Private IP Address to be used:{" "}
+                <List bulleted>
+                  <List.Item key={network.value} className="flex">
+                    {this.renderHostLabel(network)}
+                    <CopyToClipboard text={network.value} />
+                  </List.Item>
+                </List>
+              </List.Item>
               <List.Item>
                 The username and password:
                 <List>
@@ -212,8 +237,13 @@ class ScEnvironmentRdpConnectionRow extends React.Component {
                   </List.Item>
                   <List.Item className="flex">
                     {this.renderPasswordLabel(password)}
-                    <Button className="ml2" basic size="mini" onClick={this.toggleShowPassword}>
-                      {showPassword ? 'Hide' : 'Show'}
+                    <Button
+                      className="ml2"
+                      basic
+                      size="mini"
+                      onClick={this.toggleShowPassword}
+                    >
+                      {showPassword ? "Hide" : "Show"}
                     </Button>
                     <CopyToClipboard text={password} />
                   </List.Item>
@@ -221,21 +251,22 @@ class ScEnvironmentRdpConnectionRow extends React.Component {
               </List.Item>
             </List>
             <div className="mt3">
-              Additional information about connecting via RDP can be found in the documentation below:
+              Additional information about connecting via RDP can be found in
+              the documentation below:
             </div>
             <List bulleted>
               <List.Item
-                href="https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/connecting_to_windows_instance.html#connect-rdp"
+                href="https://remmina.org/remmina-rdp/"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Connect to Your Windows Instance
+                Connect to workspace
               </List.Item>
             </List>
             {this.isAppStreamEnabled && (
               <div className="mt3">
-                In your browser, please allow popups for this domain so we can open the AppStream page in a new tab for
-                you
+                In your browser, please allow popups for this domain so we can
+                open the AppStream page in a new tab for you
               </div>
             )}
           </Table.Cell>
@@ -267,7 +298,9 @@ class ScEnvironmentRdpConnectionRow extends React.Component {
     return (
       <Label>
         Password
-        <Label.Detail>{showPassword ? password : '****************'}</Label.Detail>
+        <Label.Detail>
+          {showPassword ? password : "****************"}
+        </Label.Detail>
       </Label>
     );
   }
@@ -310,4 +343,6 @@ decorate(ScEnvironmentRdpConnectionRow, {
   toggleShowPassword: action,
 });
 
-export default inject('scEnvironmentsStore')(withRouter(observer(ScEnvironmentRdpConnectionRow)));
+export default inject("scEnvironmentsStore")(
+  withRouter(observer(ScEnvironmentRdpConnectionRow))
+);

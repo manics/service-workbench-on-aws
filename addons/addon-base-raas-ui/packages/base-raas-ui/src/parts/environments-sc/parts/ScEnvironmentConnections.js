@@ -85,16 +85,19 @@ class ScEnvironmentConnections extends React.Component {
     const isHttp = scheme => scheme === 'http' || scheme === 'https' || _.isEmpty(scheme);
     const isSsh = scheme => scheme === 'ssh';
     const isRdp = scheme => scheme === 'rdp';
+    const isCustomRdp = scheme => scheme === 'customrdp';
+
     const hasHttp = !_.isEmpty(env.getConnections(item => isHttp(item.scheme)));
     const hasSsh = !_.isEmpty(env.getConnections(item => isSsh(item.scheme)));
     const hasRdp = !_.isEmpty(env.getConnections(item => isRdp(item.scheme)));
+    const hasCustomRdp = !_.isEmpty(env.getConnections(item => isCustomRdp(item.scheme)));
 
     return (
       // Keep the order the way it is, otherwise the drop down menus in the ssh connections
       // will be cropped due to the 'fadeIn animated' changing the z index
       <>
         {hasHttp && <ScEnvironmentHttpConnections scEnvironment={env} />}
-        {hasRdp && <ScEnvironmentRdpConnections scEnvironment={env} />}
+        {(hasRdp || hasCustomRdp) && <ScEnvironmentRdpConnections scEnvironment={env} />}
         {hasSsh && <ScEnvironmentSshConnections scEnvironment={env} />}
       </>
     );

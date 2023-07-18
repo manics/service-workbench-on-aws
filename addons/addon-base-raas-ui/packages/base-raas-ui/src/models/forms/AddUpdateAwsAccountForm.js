@@ -43,7 +43,7 @@ const addUpdateAwsAccountAppStreamFormFields = {
     label: 'AppStream Fleet Desired Instance',
     placeholder:
       'Maximum number of concurrently running AppStream sessions. Each researcher uses one AppStream session when viewing a workspace',
-    rules: 'required|integer',
+    rules: 'required_unless:appStreamFleetType,ELASTIC|integer',
   },
   appStreamDisconnectTimeoutSeconds: {
     label: 'AppStreamDisconnectTimeoutSeconds',
@@ -64,7 +64,7 @@ const addUpdateAwsAccountAppStreamFormFields = {
   appStreamImageName: {
     label: 'AppStreamImageName',
     placeholder: 'The name of the image used to create the fleet',
-    rules: 'required|string',
+    rules: 'required_unless:appStreamFleetType,ELASTIC|string',
   },
   appStreamInstanceType: {
     label: 'AppStreamInstanceType',
@@ -74,8 +74,8 @@ const addUpdateAwsAccountAppStreamFormFields = {
   },
   appStreamFleetType: {
     label: 'AppStreamFleetType',
-    placeholder: 'The fleet type. Should be either ALWAYS_ON or ON_DEMAND',
-    rules: ['required', 'regex:/^ALWAYS_ON|ON_DEMAND$/'],
+    placeholder: 'The fleet type. Should be either ALWAYS_ON, ELASTIC or ON_DEMAND',
+    rules: ['required', 'regex:/^ALWAYS_ON|ON_DEMAND|ELASTIC$/'],
   },
 };
 

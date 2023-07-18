@@ -20,6 +20,7 @@ const connectionScheme = {
   https: 'https',
   rdp: 'rdp',
   ssh: 'ssh',
+  customrdp: 'customrdp',
 };
 const supportedConnectionSchemes = _.values(connectionScheme);
 module.exports = { connectionScheme, supportedConnectionSchemes };

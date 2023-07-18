@@ -105,42 +105,24 @@ class ScEnvironmentSshConnections extends React.Component {
             Copy your private SSH key to AppStream
             <List bulleted>
               <List.Item>You must have downloaded the selected SSH key during creating it</List.Item>
-              <List.Item>Paste your SSH key&apos;s contents into Notepad in AppStream</List.Item>
-              <List.Item>
-                Save the file in the Downloads folder named like &quot;<i>KeyName</i>.pem&quot; (with quotes)
-              </List.Item>
+              <List.Item>Paste your SSH key&apos;s contents into the terminal window launched in AppStream</List.Item>
             </List>
           </List.Item>
           <List.Item>
-            Convert your private key to PPK format.
-            <List bulleted>
-              <List.Item>
-                PuttyGen will already be open in AppStream window. Click &quot;Load&quot; and select your PEM file
-              </List.Item>
-              <List.Item>
-                Click on &quot;Save private key&quot;. Click &quot;Yes&quot; to save without passphrase{' '}
-              </List.Item>
-            </List>
+            You should be automatically logged into an SSH session.
           </List.Item>
           <List.Item>
-            Use PPK file in Putty
-            <List bulleted>
-              <List.Item>Enter the private IP address in Putty and select SSH connection type</List.Item>
-              <List.Item>In the Category pane, expand Connection, expand SSH, and then choose Auth</List.Item>
-              <List.Item>Browse and select your PPK file for authentication. Click Open</List.Item>
-              <List.Item>When prompted to enter username, enter &quot;ec2-user&quot;</List.Item>
-            </List>
+            If you get a Permissions Denied error, click &quot;Use this SSH key&quot; and try launcing terminal
           </List.Item>
-          <List.Item>Delete your PEM and PPK files once EC2 connection is established</List.Item>
         </List>
-        <div className="mt3">More information on connecting to your Linux instance from Windows OS:</div>
+        <div className="mt3">More information on connecting to your Linux instance from terminal command line:</div>
         <List bulleted>
           <List.Item
-            href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/putty.html"
+            href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AccessingInstancesLinux.html"
             target="_blank"
             rel="noopener noreferrer"
           >
-            Connecting from Windows via Putty
+            Connecting from Linux via command line
           </List.Item>
         </List>
         <div className="mt3">

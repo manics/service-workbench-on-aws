@@ -29,6 +29,9 @@ env_type() {
     elif [ -d "/var/log/rstudio-server" ]
     then
         printf "rstudio"
+    elif [ -d "/home/ubuntu" ]
+    then
+        printf "ubuntu"
     else
         printf "ec2-linux"
     fi
@@ -133,6 +136,8 @@ case "$(env_type)" in
         chmod +x "/usr/local/bin/jq"
         echo "Finish installing jq"
         ;;
+    "ubuntu")
+        echo "Ubuntu workspace with JQ pre-installed"
 esac
 
 echo "Copying Goofys from bootstrap.sh"
@@ -200,6 +205,10 @@ case "$(env_type)" in
         echo "Finish installing fuse"
         printf "\n# Mount S3 study data\nmount_s3.sh\n\n" >> "/home/rstudio-user/.bash_profile"
         ;;
+    "ubuntu")
+        echo "Ubuntu workspace with FUSE preinstalled"
+        echo "Enabling mount of studies on user login"
+        printf "[Desktop Entry]\nType=Application\nName=Mount studies\nExec=/usr/local/bin/mount_s3.sh\nIcon=system-run\nX-GNOME-Autostart-enabled=true\n" >> "/etc/xdg/autostart/mount_s3.desktop"
 esac
 
 exit 0
