@@ -75,20 +75,8 @@ class ScEnvironmentRdpConnectionRow extends React.Component {
 
     const result = [];
     _.forEach(entries, item => {
-      if (item.publicDnsName)
-        result.push({
-          value: item.publicDnsName,
-          type: 'dns',
-          scope: 'public',
-          info: 'Public',
-        });
-      if (item.privateIp)
-        result.push({
-          value: item.privateIp,
-          type: 'ip',
-          scope: 'private',
-          info: 'Private',
-        });
+      if (item.publicDnsName) result.push({ value: item.publicDnsName, type: 'dns', scope: 'public', info: 'Public' });
+      if (item.privateIp) result.push({ value: item.privateIp, type: 'ip', scope: 'private', info: 'Private' });
     });
 
     return result;

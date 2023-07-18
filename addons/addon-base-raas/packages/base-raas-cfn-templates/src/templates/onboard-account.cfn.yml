@@ -175,10 +175,8 @@ Conditions:
     - !Not [!Equals [!Ref 'DomainName', '']]
     - !Condition isAppStream
   enableFlowLogs: !Equals [!Ref EnableFlowLogs, true]
-  enableFlowLogsNonAppStream:
-    !And [Condition: isNotAppStream, Condition: enableFlowLogs]
-  enableFlowLogsWithAppStream:
-    !And [Condition: isAppStream, Condition: enableFlowLogs]
+  enableFlowLogsNonAppStream: !And [Condition: isNotAppStream,Condition: enableFlowLogs]
+  enableFlowLogsWithAppStream: !And [Condition: isAppStream,Condition: enableFlowLogs]
   amiSharingEnabled:
     !And [
       !Equals [!Ref 'EnableAmiSharing', true],

@@ -55,10 +55,7 @@ class AppStreamScService extends Service {
       .promise();
 
     // Write audit event
-    await this.audit(requestContext, {
-      action: 'share-appstream-image-with-account',
-      body: { accountId },
-    });
+    await this.audit(requestContext, { action: 'share-appstream-image-with-account', body: { accountId } });
 
     return result;
   }
@@ -71,9 +68,7 @@ class AppStreamScService extends Service {
     ]);
 
     // Find stack
-    const { awsAccountId } = await indexesService.mustFind(requestContext, {
-      id: indexId,
-    });
+    const { awsAccountId } = await indexesService.mustFind(requestContext, { id: indexId });
     const {
       appStreamStackName: stackName,
       accountId,
@@ -129,9 +124,7 @@ class AppStreamScService extends Service {
       { clientName: 'AppStream', options: { signatureVersion: 'v4' } },
     );
 
-    const environment = await environmentScService.mustFind(requestContext, {
-      id: environmentId,
-    });
+    const environment = await environmentScService.mustFind(requestContext, { id: environmentId });
 
     const { stackName, fleetName } = await this.getStackAndFleet(requestContext, {
       environmentId,
@@ -155,10 +148,7 @@ class AppStreamScService extends Service {
     }
 
     // Write audit event
-    await this.audit(requestContext, {
-      action: 'appstream-firefox-app-url-requested',
-      body: { environmentId },
-    });
+    await this.audit(requestContext, { action: 'appstream-firefox-app-url-requested', body: { environmentId } });
 
     return result.StreamingURL;
   }
@@ -168,9 +158,7 @@ class AppStreamScService extends Service {
       'environmentScService',
       'environmentScKeypairService',
     ]);
-    const environment = await environmentScService.mustFind(requestContext, {
-      id: environmentId,
-    });
+    const environment = await environmentScService.mustFind(requestContext, { id: environmentId });
 
     const connectionScheme = environment.outputs.filter(output =>
       output.OutputValue === 'customrdp' || output.OutputValue === 'rdp' ? output.OutputValue : undefined,
@@ -198,10 +186,7 @@ class AppStreamScService extends Service {
     const privateIp = _.get(networkInterfaces[0], 'PrivateIpAddress');
 
     const userId = this.generateUserId(requestContext, environment);
-    this.log.info({
-      msg: `Creating AppStream URL`,
-      appStreamSessionUid: userId,
-    });
+    this.log.info({ msg: `Creating AppStream URL`, appStreamSessionUid: userId });
 
     let sessionContext;
     if (connectionScheme && connectionScheme[0].OutputValue === 'rdp') {
@@ -246,10 +231,7 @@ class AppStreamScService extends Service {
     }
 
     // Write audit event
-    await this.audit(requestContext, {
-      action: 'appstream-remote-desktop-app-url-requested',
-      body: { environmentId },
-    });
+    await this.audit(requestContext, { action: 'appstream-remote-desktop-app-url-requested', body: { environmentId } });
 
     return result.StreamingURL;
   }

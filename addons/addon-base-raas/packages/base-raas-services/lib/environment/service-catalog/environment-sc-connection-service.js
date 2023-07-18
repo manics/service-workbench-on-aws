@@ -169,10 +169,7 @@ class EnvironmentScConnectionService extends Service {
     const connection = await this.mustFindConnection(requestContext, envId, connectionId);
 
     // Write audit event
-    await this.audit(requestContext, {
-      action: 'env-presigned-url-requested',
-      body: { id: envId, connection },
-    });
+    await this.audit(requestContext, { action: 'env-presigned-url-requested', body: { id: envId, connection } });
 
     if (!_.isEmpty(connection.url)) {
       // if connection already has url then just return it
@@ -180,9 +177,7 @@ class EnvironmentScConnectionService extends Service {
     }
 
     // Verify environment is linked to an AppStream project when application has AppStream enabled
-    const { projectId } = await environmentScService.mustFind(requestContext, {
-      id: envId,
-    });
+    const { projectId } = await environmentScService.mustFind(requestContext, { id: envId });
     await environmentScService.verifyAppStreamConfig(requestContext, projectId);
 
     if (_.toLower(_.get(connection, 'type', '')) === 'sagemaker') {
@@ -250,10 +245,7 @@ class EnvironmentScConnectionService extends Service {
     const publicKeyObject = key.importKey({ n: modulusBuffer, e: exponentBuffer }, 'components-public');
     const payloadBuffer = Buffer.from(credentials);
     const result = crypto.publicEncrypt(
-      {
-        key: publicKeyObject.exportKey('public'),
-        padding: crypto.constants.RSA_PKCS1_PADDING,
-      },
+      { key: publicKeyObject.exportKey('public'), padding: crypto.constants.RSA_PKCS1_PADDING },
       payloadBuffer,
     );
     const params = { v: result.toString('base64') };
@@ -290,9 +282,7 @@ class EnvironmentScConnectionService extends Service {
     await validationService.ensureValid(sshConnectionInfo, sshConnectionInfoSchema);
 
     // Verify environment is linked to an AppStream project when application has AppStream enabled
-    const { projectId } = await environmentScService.mustFind(requestContext, {
-      id: envId,
-    });
+    const { projectId } = await environmentScService.mustFind(requestContext, { id: envId });
     await environmentScService.verifyAppStreamConfig(requestContext, projectId);
 
     // The following will succeed only if the user has permissions to access the specified environment
@@ -329,10 +319,7 @@ class EnvironmentScConnectionService extends Service {
       environmentScService.getClientSdkWithEnvMgmtRole(
         requestContext,
         { id: envId },
-        {
-          clientName: 'EC2InstanceConnect',
-          options: { apiVersion: '2018-04-02' },
-        },
+        { clientName: 'EC2InstanceConnect', options: { apiVersion: '2018-04-02' } },
       ),
     ]);
 
@@ -368,9 +355,7 @@ class EnvironmentScConnectionService extends Service {
     ]);
 
     // Verify environment is linked to an AppStream project when application has AppStream enabled
-    const { projectId } = await environmentScService.mustFind(requestContext, {
-      id: envId,
-    });
+    const { projectId } = await environmentScService.mustFind(requestContext, { id: envId });
     await environmentScService.verifyAppStreamConfig(requestContext, projectId);
 
     // The following will succeed only if the user has permissions to access the specified environment
