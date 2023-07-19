@@ -20,8 +20,8 @@ const { allowIfActive, allowIfAdmin } = require('@amzn/base-services/lib/authori
 const { getSystemRequestContext } = require('@amzn/base-services/lib/helpers/system-context');
 
 const { isExternalGuest, isExternalResearcher, isInternalGuest, isAdmin, isSystem } = require('../helpers/is-role');
-const createSchema = require('../schema/create-project.json');
-const updateSchema = require('../schema/update-project.json');
+const createSchema = require('../schema/create-project');
+const updateSchema = require('../schema/update-project');
 
 const settingKeys = {
   tableName: 'dbProjects',
@@ -292,6 +292,20 @@ class ProjectService extends Service {
     } catch (err) {
       throw this.boom.badRequest(`There was an error filtering AppStream projects: ${err}`, true);
     }
+  }
+
+  // Gets the AWS Account entity for the given project ID
+  async getAccountForProjectId(requestContext, id) {
+    const [awsAccountsService, indexesService] = await this.service(['awsAccountsService', 'indexesService']);
+
+    const project = await this.mustFind(requestContext, { id });
+    const { indexId } = project;
+
+    const index = await indexesService.mustFind(requestContext, { id: indexId });
+    const { awsAccountId } = index;
+
+    const awsAccount = await awsAccountsService.mustFind(requestContext, { id: awsAccountId });
+    return awsAccount;
   }
 
   /**

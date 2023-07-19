@@ -2,6 +2,68 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.0.0](https://github.com/awslabs/service-workbench-on-aws/compare/v5.2.11...v6.0.0) (2023-06-12)
+
+Going forward, a BYOB study will now have to be assigned to a SWB project ID. This is to enforce access to the BYOB study's S3 prefix only from its project's linked VPC endpoint.
+
+### For upgrade installations
+
+**Before upgrade:**
+
+* Terminate all environments that are accessing BYOB studies. This is optional but recommended by the service team.
+* Make sure your hosting accounts are in the `Up-to-Date` status. You can check by visiting the `Accounts` tab on SWB UI and clicking on the `AWS Accounts` tab. If they’re not, please re-onboard the accounts that need updating.
+
+**After upgrade:**
+
+* Once the new version of SWB has been installed, navigate to the `Data Sources` tab in SWB UI. 
+* On each of the Data Source bucket that has been registered, click on the “CloudFormation” tab, click the `Update Stack` button, while being logged into the Data Source account console. This will navigate you to the CloudFormation stack for that bucket. Continue with the stack update.
+
+**Note:**
+To continue using existing BYOB studies that were not assigned to a SWB project ID please add a key `projectId` to that study’s entry in the `<stage>-<regionShortName>-<solutionName>-Studies` DynamoDB table in the SWB main account with its value equal to the SWB project ID you would like to associate it with. Please work with your AWS partner if you need help.
+
+### Bug Fixes
+
+* BYOB role updates for VPCE restrictions ([#1197](https://github.com/awslabs/service-workbench-on-aws/issues/1197)) ([cb876ca](https://github.com/awslabs/service-workbench-on-aws/commit/cb876caeae3c1c05c27c58c14cd03528e2525b8f))
+* making projectId required for BYOB ([#1198](https://github.com/awslabs/service-workbench-on-aws/issues/1198)) ([0d66648](https://github.com/awslabs/service-workbench-on-aws/commit/0d6664843685a16601cae228b3a0c9d2d08f4813))
+
+### [5.2.11](https://github.com/awslabs/service-workbench-on-aws/compare/v5.2.10...v5.2.11) (2023-05-05)
+
+### Bug Fixes
+
+* add S3 VPC Endpoints to restrict bucket access ([#1189](https://github.com/awslabs/service-workbench-on-aws/pull/1189)) ([60c3439](https://github.com/awslabs/service-workbench-on-aws/commit/60c34392e791fdadcfdbeb5a45e6b80a57eb31fe))
+
+### [5.2.10](https://github.com/awslabs/service-workbench-on-aws/compare/v5.2.9...v5.2.10) (2023-04-28)
+
+### Bug Fixes
+
+* add OwnershipControls for LoggingBucket ([#1185](https://github.com/awslabs/service-workbench-on-aws/issues/1185)) ([c75600c](https://github.com/awslabs/service-workbench-on-aws/commit/c75600cdd74846d6f43b74f888e88b7ab2739536))
+
+### [5.2.9](https://github.com/awslabs/service-workbench-on-aws/compare/v5.2.8...v5.2.9) (2023-04-25)
+* add `Ec2InstanceSourceVPC` and `ec2InstanceSourcePrivateIPv4` conditional checks to IAM roles for Linux and Windows EC2 templates ([#1181](https://github.com/awslabs/service-workbench-on-aws/pull/1181)) ([9295efb](https://github.com/awslabs/service-workbench-on-aws/commit/9295efb43f46e5da7201a3dc4d36000c4eccf34d))
+
+### [5.2.8](https://github.com/awslabs/service-workbench-on-aws/compare/v5.2.7...v5.2.8) (2023-04-18)
+
+
+### Features
+
+* `PropagateTagsToVolumeOnCreation: true` ([#1124](https://github.com/awslabs/service-workbench-on-aws/issues/1124)) ([65417fb](https://github.com/awslabs/service-workbench-on-aws/commit/65417fbe26a77b67638b90d181b9fc700022e140)), closes [/docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance.html#cfn-ec2](https://github.com/awslabs//docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance.html/issues/cfn-ec2)
+* EC2 workspace root volume size can be configured ([#1123](https://github.com/awslabs/service-workbench-on-aws/issues/1123)) ([62b8ea8](https://github.com/awslabs/service-workbench-on-aws/commit/62b8ea8f0ae98269249edb8d30ccbe892a9cc190))
+
+
+### Bug Fixes
+
+* autostop sagemaker fix for non TRE/no study mounting ([#1154](https://github.com/awslabs/service-workbench-on-aws/issues/1154)) ([cfa455b](https://github.com/awslabs/service-workbench-on-aws/commit/cfa455be321fd7c1dea5a08000c9815e5efa3c14))
+* go mod format ([#1163](https://github.com/awslabs/service-workbench-on-aws/issues/1163)) ([358788d](https://github.com/awslabs/service-workbench-on-aws/commit/358788d2e48d76aa2c16b72675bbaf5d5081037b))
+* Make SageMaker IAM policy case insensitive ([#1177](https://github.com/awslabs/service-workbench-on-aws/issues/1177)) ([fd6f1b8](https://github.com/awslabs/service-workbench-on-aws/commit/fd6f1b892e8bd5f8f062d8c3d017976720679e8e))
+* remove unneeded lock file ([#1100](https://github.com/awslabs/service-workbench-on-aws/issues/1100)) ([3c030b7](https://github.com/awslabs/service-workbench-on-aws/commit/3c030b7de19dc4db8f043f95b0fced44b4bef46f))
+* revert previous changes for Sagemaker fix ([#1114](https://github.com/awslabs/service-workbench-on-aws/issues/1114)) ([63315cd](https://github.com/awslabs/service-workbench-on-aws/commit/63315cde14b9e36882ba6c942658817b8f33615d))
+* s3 CLI command fix ([#1149](https://github.com/awslabs/service-workbench-on-aws/issues/1149)) ([3a70970](https://github.com/awslabs/service-workbench-on-aws/commit/3a709700d2749b1da98de85817841f1935d8ed63))
+* sagemaker autostop ([#1153](https://github.com/awslabs/service-workbench-on-aws/issues/1153)) ([31b6cd8](https://github.com/awslabs/service-workbench-on-aws/commit/31b6cd8b8db39ddd0732b4945615f93afa08100f))
+* update bootstrap script for sagemaker ([#1110](https://github.com/awslabs/service-workbench-on-aws/issues/1110)) ([0c1571d](https://github.com/awslabs/service-workbench-on-aws/commit/0c1571d361e2b4091805d4df587ec41a8aab7fd6))
+* update env type name for sagemaker tre ([#1101](https://github.com/awslabs/service-workbench-on-aws/issues/1101)) ([49f46df](https://github.com/awslabs/service-workbench-on-aws/commit/49f46df7598f1f19e9d950db6a952797186d5fbe))
+* upgrade code build image for target env deploy project ([#1168](https://github.com/awslabs/service-workbench-on-aws/issues/1168)) ([d4120ff](https://github.com/awslabs/service-workbench-on-aws/commit/d4120ff3a307d5a7e7d9b13af670c8d238e9c833))
+* upgrade golang in buildspec ([#1166](https://github.com/awslabs/service-workbench-on-aws/issues/1166)) ([68abc3c](https://github.com/awslabs/service-workbench-on-aws/commit/68abc3c22161d98721c2f90ffb8fae35c0308198))
+
 ### [5.2.7](https://github.com/awslabs/service-workbench-on-aws/compare/v5.2.6...v5.2.7) (2022-12-30)
 
 ### Bug Fixes
@@ -280,7 +342,7 @@ The Service Workbench member account onboarding process is changed to be more in
 
 This change applies to all updated installations, and can be applied to those installations that have already onboarded member accounts.
 
-To learn more about the new process, refer to the updated [instructions](https://github.com/awslabs/service-workbench-on-aws/blob/mainline/docs/Service_Workbench_Post_Deployment_Guide.pdf) in the Service Workbench Post Deployment guide.
+To learn more about the new process, refer to the updated [instructions](./docs/Service_Workbench_Post_Deployment_Guide.pdf) in the Service Workbench Post Deployment guide.
 
 **Important Notes:**
 
@@ -303,7 +365,7 @@ This feature is disabled by default upon install. To enable this feature, change
 - If you have an existing installation without the feature flag enabled, and want to activate this feature flag, terminate all workspaces prior to activating the flag.
 - AppStream service use does incur additional cost and we recommend you review the cost impact prior to configuring your AppStream fleet: https://aws.amazon.com/appstream2/pricing/
 - Because the Service Workbench workspaces do not have internet connectivity, [VPC endpoints](https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints.html) are introduced for all AWS services that the workspaces use (such as S3, EC2, and AppStream).
-- Significant updates to the post deployment configuration instructions when this feature is enabled are outlined [here](https://github.com/awslabs/service-workbench-on-aws/blob/mainline/docs/Service_Workbench_Post_Deployment_Guide.pdf)
+- Significant updates to the post deployment configuration instructions when this feature is enabled are outlined [here](./docs/Service_Workbench_Post_Deployment_Guide.pdf)
 
 #### 3. Enabling secure egress
 
